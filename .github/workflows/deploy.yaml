@@ -41,7 +41,10 @@ jobs:
           --env "BP_WEB_SERVER_ROOT=dist/websocket-ui" \
           --env "BP_WEB_SERVER_ENABLE_PUSH_STATE=true" \
           --env "NODE_ENV=production"
+          --env "SERVER_DOMAIN=$SERVER_DOMAIN"
         shell: bash
+        env:
+          SERVER_DOMAIN: ${{ secrets.SERVER_DOMAIN }}
 
       - name: Set up Docker Build
         uses: docker/setup-buildx-action@v3
