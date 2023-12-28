@@ -6,7 +6,7 @@ on:
 
 jobs:
   build-ui-image:
-    name: Build and deploy image
+    name: Build frontend image
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -53,7 +53,7 @@ jobs:
         shell: bash
 
   build-native-image:
-    name: Build and Deploy native image
+    name: Build backend native image
     runs-on: ubuntu-latest
     defaults:
       run:
