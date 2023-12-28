@@ -1,3 +1,3 @@
-package com.sse.model;
+package com.sse;
 
 public record HelloMessage(String name) { }

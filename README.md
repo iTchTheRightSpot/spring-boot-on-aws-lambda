@@ -1,9 +1,11 @@
 # About
-Simple implementation to understand Server Side Event (SSE) using angular 16.2.1. and spring boot 3.1.4 (JAVA 17)
+Testing deploying to aws ECR
 
-## Dependencies
+## Technologies
 ### UI
+* Angular 16
 * Tailwind CSS
 
 ### Backend
 * Spring starter web
+* Spring boot 3.1.4 Java 17
