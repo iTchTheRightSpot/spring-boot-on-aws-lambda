@@ -2,6 +2,6 @@ import { EnvironmentPlugin } from 'webpack';
 
 module.exports = {
   plugins: [
-    new EnvironmentPlugin(['API_KEY'])
+    new EnvironmentPlugin(['SERVER_DOMAIN'])
   ]
 }
