@@ -3,7 +3,7 @@ Testing deploying to aws ECR
 
 ## Technologies
 ### UI
-* Angular 16
+* Angular 17
 * Tailwind CSS
 
 ### Backend
