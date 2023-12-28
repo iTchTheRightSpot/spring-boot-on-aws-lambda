@@ -1,3 +1,5 @@
 package com.sse;
 
-public record HelloMessage(String name) { }
+import java.io.Serializable;
+
+public record HelloMessage(String name) implements Serializable { }
