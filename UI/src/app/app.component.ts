@@ -3,6 +3,7 @@ import {AppService} from "./app.service";
 import {FormControl} from "@angular/forms";
 import {catchError, debounceTime, distinctUntilChanged, of, switchMap} from "rxjs";
 import {HttpErrorResponse} from "@angular/common/http";
+import * as process from "process";
 
 @Component({
   selector: 'app-root',
@@ -59,6 +60,10 @@ import {HttpErrorResponse} from "@angular/common/http";
 export class AppComponent {
 
   private readonly service = inject(AppService);
+
+  constructor() {
+    console.log('Key ', process.env['API_KEY']);
+  }
 
   name = new FormControl();
   name$ = this.name.valueChanges
