@@ -5,11 +5,9 @@ on:
       - lambda
 
 permissions:
-  id-token: write # This is required for requesting the JWT
-  contents: read
+  id-token: write
 
 jobs:
-
   build-ui-image:
     name: Build frontend image
     runs-on: ubuntu-latest
@@ -26,7 +24,6 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v3
         with:
           role-to-assume: ${{ secrets.ARN_ROLE }}
-          role-session-name: samplerolesession
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Login to Amazon ECR
