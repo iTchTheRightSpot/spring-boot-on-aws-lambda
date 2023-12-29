@@ -56,12 +56,11 @@ jobs:
       - name: Build, tag, and push docker image to Amazon ECR
         env:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          REPOSITORY: server-sent-event
+          REPOSITORY: websocket-ui
           IMAGE_TAG: ${{ github.sha }}
-          WEBSOCKET_UI_TAG: ${{ secrets.WEBSOCKET_UI_TAG }}
         run: |
-          docker image tag emmanuelu17/websocket-ui:latest ${{ secrets.WEBSOCKET_UI_TAG }}
-          docker push ${{ secrets.WEBSOCKET_UI_TAG }}
+          docker image tag emmanuelu17/websocket-ui:latest $REGISTRY/$REPOSITORY:$IMAGE_TAG
+          docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
 
   build-native-image:
     name: Build backend native image
@@ -96,9 +95,8 @@ jobs:
       - name: Build, tag, and push docker image to Amazon ECR
         env:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          REPOSITORY: server-sent-event
+          REPOSITORY: sse
           IMAGE_TAG: ${{ github.sha }}
-          SSE_TAG: ${{ secrets.SSE_TAG }}
         run: |
-          docker image tag emmanuelu17/server-side-event:latest ${{ secrets.SSE_TAG }}
-          docker push ${{ secrets.SSE_TAG }}
+          docker image tag emmanuelu17/server-side-event:latest $REGISTRY/$REPOSITORY:$IMAGE_TAG
+          docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
