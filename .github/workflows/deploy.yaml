@@ -4,7 +4,12 @@ on:
     branches:
       - lambda
 
+permissions:
+  id-token: write # This is required for requesting the JWT
+  contents: read
+
 jobs:
+
   build-ui-image:
     name: Build frontend image
     runs-on: ubuntu-latest
@@ -16,12 +21,17 @@ jobs:
       - name: Checkout source code
         uses: actions/checkout@v3
 
-      # Log into dockerhub
-      - name: Log into DockerHub
-        uses: docker/login-action@v3
+      # https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-amazon-web-services
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v3
         with:
-          username: emmanuelu17
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          role-to-assume: ${{ secrets.ARN_ROLE }}
+          role-session-name: samplerolesession
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
 
       # See  https://buildpacks.io/docs/buildpack-author-guide/publishing-with-github-actions/
       - name: Setup-tools
@@ -46,14 +56,13 @@ jobs:
         env:
           SERVER_DOMAIN: ${{ secrets.SERVER_DOMAIN }}
 
-      - name: Set up Docker Build
-        uses: docker/setup-buildx-action@v3
-
-      - name: Tag & Publish to Docker Hub
+      - name: Build, tag, and push docker image to Amazon ECR
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REPOSITORY: server-sent-event
+          IMAGE_TAG: ${{ github.sha }}
         run: |
-          #!/usr/bin/env bash
           docker push --all-tags emmanuelu17/websocket-ui
-        shell: bash
 
   build-native-image:
     name: Build backend native image
@@ -72,19 +81,24 @@ jobs:
           java-version: '17.0.7'
           distribution: 'graalvm'
 
-      - name: Log into DockerHub
-        uses: docker/login-action@v3
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          username: emmanuelu17
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          role-to-assume: ${{ secrets.ARN_ROLE }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
 
       - name: Build native image
         run: mvn -Pnative spring-boot:build-image -DskipTests
 
-      - name: Set up docker build
-        uses: docker/setup-buildx-action@v3
-
-      - name: Push native image to dockerhub
+      - name: Build, tag, and push docker image to Amazon ECR
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REPOSITORY: server-sent-event
+          IMAGE_TAG: ${{ github.sha }}
         run: |
           docker image tag emmanuelu17/server-side-event:latest emmanuelu17/sse:latest
           docker push --all-tags emmanuelu17/sse
