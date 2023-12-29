@@ -58,8 +58,10 @@ jobs:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           REPOSITORY: server-sent-event
           IMAGE_TAG: ${{ github.sha }}
+          WEBSOCKET_UI_TAG: ${{ secrets.WEBSOCKET_UI_TAG }}
         run: |
-          docker push --all-tags emmanuelu17/websocket-ui
+          docker image tag emmanuelu17/websocket-ui:latest ${{ secrets.WEBSOCKET_UI_TAG }}
+          docker push ${{ secrets.WEBSOCKET_UI_TAG }}
 
   build-native-image:
     name: Build backend native image
@@ -96,6 +98,7 @@ jobs:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           REPOSITORY: server-sent-event
           IMAGE_TAG: ${{ github.sha }}
+          SSE_TAG: ${{ secrets.SSE_TAG }}
         run: |
-          docker image tag emmanuelu17/server-side-event:latest emmanuelu17/sse:latest
-          docker push --all-tags emmanuelu17/sse
+          docker image tag emmanuelu17/server-side-event:latest ${{ secrets.SSE_TAG }}
+          docker push ${{ secrets.SSE_TAG }}
