@@ -8,58 +8,59 @@ permissions:
   id-token: write
 
 jobs:
-  build-ui-image:
-    name: Build frontend image
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./UI
-
-    steps:
-      - name: Checkout source code
-        uses: actions/checkout@v3
-
-      # https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-amazon-web-services
-      - name: configure aws credentials
-        uses: aws-actions/configure-aws-credentials@v3
-        with:
-          role-to-assume: ${{ secrets.ARN_ROLE }}
-          aws-region: ${{ secrets.AWS_REGION }}
-
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2
-
-      - name: Setup-tools
-        uses: buildpacks/github-actions/setup-tools@v5.1.0
-
-      - name: Setup pack
-        uses: buildpacks/github-actions/setup-pack@v5.1.0
-
-      - name: Build image
-        run: |
-          #!/usr/bin/env bash
-          pack config default-builder paketobuildpacks/builder:base
-          pack build emmanuelu17/websocket-ui --buildpack paketo-buildpacks/web-servers \
-          --env "BP_WEB_SERVER=nginx" \
-          --env "BP_WEB_SERVER_ROOT=dist/websocket-ui" \
-          --env "BP_WEB_SERVER_ENABLE_PUSH_STATE=true" \
-          --env "NODE_ENV=production" \
-          --env "SERVER_DOMAIN=$SERVER_DOMAIN"
-        shell: bash
-        env:
-          SERVER_DOMAIN: ${{ secrets.SERVER_DOMAIN }}
-
-
-      # https://github.com/aws-actions/amazon-ecr-login
-      - name: Build, tag, and push docker image to Amazon ECR
-        env:
-          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          REPOSITORY: websocket-ui
-          IMAGE_TAG: ${{ github.sha }}
-        run: |
-          docker image tag emmanuelu17/websocket-ui:latest $REGISTRY/$REPOSITORY:$IMAGE_TAG
-          docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+#  build-ui-image:
+#    name: Build frontend image
+#    runs-on: ubuntu-latest
+#    defaults:
+#      run:
+#        working-directory: ./UI
+#
+#    steps:
+#      - name: Checkout source code
+#        uses: actions/checkout@v3
+#
+#      # https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-amazon-web-services
+#      - name: configure aws credentials
+#        uses: aws-actions/configure-aws-credentials@v3
+#        with:
+#          role-to-assume: ${{ secrets.ARN_ROLE }}
+#          aws-region: ${{ secrets.AWS_REGION }}
+#
+#      - name: Login to Amazon ECR
+#        id: login-ecr
+#        uses: aws-actions/amazon-ecr-login@v2
+#
+#      - name: Setup-tools
+#        uses: buildpacks/github-actions/setup-tools@v5.1.0
+#
+#      - name: Setup pack
+#        uses: buildpacks/github-actions/setup-pack@v5.1.0
+#
+#      - name: Build image
+#        run: |
+#          #!/usr/bin/env bash
+#          pack config default-builder paketobuildpacks/builder:base
+#          pack build emmanuelu17/websocket-ui --buildpack paketo-buildpacks/web-servers \
+#          --env "BP_WEB_SERVER=nginx" \
+#          --env "BP_WEB_SERVER_ROOT=dist/websocket-ui" \
+#          --env "BP_WEB_SERVER_ENABLE_PUSH_STATE=true" \
+#          --env "NODE_ENV=production" \
+#          --env "SERVER_DOMAIN=$SERVER_DOMAIN"
+#        shell: bash
+#        env:
+#          SERVER_DOMAIN: ${{ secrets.SERVER_DOMAIN }}
+#
+#
+#      # https://github.com/aws-actions/amazon-ecr-login
+#      - name: Build, tag, and push docker image to Amazon ECR
+#        env:
+#          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+#          REPOSITORY: websocket-ui
+#          IMAGE_TAG: ${{ github.sha }}
+#        run: |
+#          docker image tag emmanuelu17/websocket-ui:latest $REGISTRY/$REPOSITORY:$IMAGE_TAG
+#          docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+#
 
   build-native-image:
     name: Build backend native image
@@ -88,15 +89,18 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Build native image
-        run: mvn -Pnative spring-boot:build-image -DskipTests
+      - name: Compile to native image
+        run: mvn clean native:compile -Pnative -DskipTests
+
+      - name: Copy bytecode generated to docker image
+        run: docker build -t emmanuelu17/server:latest .
 
       # https://github.com/aws-actions/amazon-ecr-login
-      - name: Build, tag, and push docker image to Amazon ECR
+      - name: Tag, and push docker image to Amazon ECR
         env:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           REPOSITORY: sse
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          docker image tag emmanuelu17/server-side-event:latest $REGISTRY/$REPOSITORY:$IMAGE_TAG
+          docker image tag emmanuelu17/server:latest $REGISTRY/$REPOSITORY:$IMAGE_TAG
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG

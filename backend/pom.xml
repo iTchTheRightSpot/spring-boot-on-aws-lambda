@@ -25,7 +25,6 @@
             <dependency>
                 <groupId>software.amazon.awssdk</groupId>
                 <artifactId>bom</artifactId>
-<!--                <version>2.20.101</version>-->
                 <version>2.22.9</version>
                 <type>pom</type>
                 <scope>import</scope>
@@ -62,160 +61,97 @@
             <version>${aws.spring.java.sdk.version}</version>
         </dependency>
         <!-- Platform-specific Linux x86_64 JAR -->
-<!--        <dependency>-->
-<!--            <groupId>com.amazonaws</groupId>-->
-<!--            <artifactId>aws-lambda-java-runtime-interface-client</artifactId>-->
-<!--            <version>2.4.1</version>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-lambda-java-runtime-interface-client</artifactId>
+            <version>2.4.1</version>
+        </dependency>
     </dependencies>
 
     <build>
         <plugins>
-
-            <!-- native build -->
             <plugin>
-                <groupId>org.graalvm.buildtools</groupId>
-                <artifactId>native-maven-plugin</artifactId>
-                <configuration>
-                    <mainClass>com.sse.Application</mainClass>
-                    <buildArgs>
-                        <!-- required for AWS Lambda Runtime Interface Client -->
-                        <arg>--enable-url-protocols=http -H:+AddAllCharsets</arg>
-                    </buildArgs>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>build-native</id>
-                        <goals>
-                            <goal>build</goal>
-                        </goals>
-                        <phase>package</phase>
-                    </execution>
-                </executions>
-            </plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
 
-            <!-- assembly zip packaging -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>native</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                        <inherited>false</inherited>
-                    </execution>
-                </executions>
                 <configuration>
-                    <finalName>lambda</finalName>
-                    <descriptors>
-                        <descriptor>src/assembly/native.xml</descriptor>
-                    </descriptors>
+                    <excludes>
+                        <exclude>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </exclude>
+                    </excludes>
+                    <image>
+                        <name>docker.io/emmanuelu17/${project.artifactId}:latest</name>
+                    </image>
                 </configuration>
             </plugin>
-
         </plugins>
     </build>
 
-<!--    <profiles>-->
-<!--        &lt;!&ndash; default profile &ndash;&gt;-->
-<!--        <profile>-->
-<!--            <id>default</id>-->
-<!--            <activation>-->
-<!--                <activeByDefault>true</activeByDefault>-->
-<!--            </activation>-->
+    <profiles>
+        <!-- native profile -->
+        <profile>
+            <id>native</id>
+            <activation>
+                <property>
+                    <name>native</name>
+                </property>
+                <activeByDefault>true</activeByDefault>
+            </activation>
 
-<!--            <properties>-->
-<!--                <spring.profiles.active>default</spring.profiles.active>-->
-<!--            </properties>-->
+            <properties>
+                <spring.profiles.active>default</spring.profiles.active>
+            </properties>
 
-<!--            <build>-->
-<!--                <plugins>-->
-<!--                    <plugin>-->
-<!--                        <groupId>org.springframework.boot</groupId>-->
-<!--                        <artifactId>spring-boot-maven-plugin</artifactId>-->
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.graalvm.buildtools</groupId>
+                        <artifactId>native-maven-plugin</artifactId>
+                        <configuration>
+                            <mainClass>com.sse.Application</mainClass>
+                            <buildArgs>
+                                <arg>--enable-url-protocols=http</arg>
+                                <arg>-H:+AddAllCharsets</arg>
+                            </buildArgs>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>build-native</id>
+                                <goals>
+                                    <goal>compile-no-fork</goal>
+                                </goals>
+                                <phase>package</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
 
-<!--                        <configuration>-->
-<!--                            <excludes>-->
-<!--                                <exclude>-->
-<!--                                    <groupId>org.projectlombok</groupId>-->
-<!--                                    <artifactId>lombok</artifactId>-->
-<!--                                </exclude>-->
-<!--                            </excludes>-->
-<!--                            <image>-->
-<!--                                <name>docker.io/emmanuelu17/${project.artifactId}:latest</name>-->
-<!--                            </image>-->
-<!--                        </configuration>-->
-<!--                    </plugin>-->
-<!--                </plugins>-->
-<!--            </build>-->
-
-<!--        </profile>-->
-
-<!--        &lt;!&ndash; native profile &ndash;&gt;-->
-<!--        <profile>-->
-<!--            <id>native</id>-->
-<!--            <activation>-->
-<!--                <property>-->
-<!--                    <name>native</name>-->
-<!--                </property>-->
-<!--            </activation>-->
-<!--            <properties>-->
-<!--                <spring.profiles.active>default</spring.profiles.active>-->
-<!--            </properties>-->
-
-<!--            <build>-->
-<!--                <plugins>-->
-<!--                    <plugin>-->
-<!--                        <groupId>org.graalvm.buildtools</groupId>-->
-<!--                        <artifactId>native-maven-plugin</artifactId>-->
-<!--                        <configuration>-->
-<!--                            <mainClass>com.sse.Application</mainClass>-->
-<!--                            <buildArgs>-->
-<!--                                &lt;!&ndash; required for AWS Lambda Runtime Interface Client &ndash;&gt;-->
-<!--                                <arg>&#45;&#45;enable-url-protocols=http</arg>-->
-<!--                                <arg>&#45;&#45;add-opens java.base/java.util=ALL-UNNAMED</arg>-->
-<!--                            </buildArgs>-->
-<!--                        </configuration>-->
-<!--                        <executions>-->
-<!--                            <execution>-->
-<!--                                <id>build-native</id>-->
-<!--                                <goals>-->
-<!--                                    <goal>build</goal>-->
-<!--                                </goals>-->
-<!--                                <phase>package</phase>-->
-<!--                            </execution>-->
-<!--                        </executions>-->
-<!--                    </plugin>-->
-
-<!--                    <plugin>-->
-<!--                        <groupId>org.apache.maven.plugins</groupId>-->
-<!--                        <artifactId>maven-assembly-plugin</artifactId>-->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-assembly-plugin</artifactId>
 <!--                        <version>${maven.assembly.plugin.version}</version>-->
-<!--                        <executions>-->
-<!--                            <execution>-->
-<!--                                <id>native</id>-->
-<!--                                <phase>package</phase>-->
-<!--                                <goals>-->
-<!--                                    <goal>single</goal>-->
-<!--                                </goals>-->
-<!--                                <inherited>false</inherited>-->
-<!--                            </execution>-->
-<!--                        </executions>-->
-<!--                        <configuration>-->
-<!--                            <finalName>lambda</finalName>-->
-<!--                            <descriptors>-->
-<!--                                <descriptor>src/assembly/native.xml</descriptor>-->
-<!--                            </descriptors>-->
-<!--                        </configuration>-->
-<!--                    </plugin>-->
-<!--                </plugins>-->
-<!--            </build>-->
-<!--        </profile>-->
-<!--        &lt;!&ndash; end of native profile &ndash;&gt;-->
+                        <executions>
+                            <execution>
+                                <id>native</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                                <inherited>false</inherited>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <finalName>lambda</finalName>
+                            <descriptors>
+                                <descriptor>src/assembly/native.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
 
-<!--    </profiles>-->
+    </profiles>
 
 </project>

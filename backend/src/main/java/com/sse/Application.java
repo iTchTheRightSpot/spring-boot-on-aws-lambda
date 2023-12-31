@@ -10,7 +10,7 @@ import org.springframework.context.annotation.ImportRuntimeHints;
 
 @SpringBootApplication
 @ImportRuntimeHints(value = GraalRuntimeHints.class)
-@RegisterReflectionForBinding(value = StreamHandler.class)
+@RegisterReflectionForBinding(value = RequestHandler.class)
 public class Application {
 
     public static void main(String[] args) {
