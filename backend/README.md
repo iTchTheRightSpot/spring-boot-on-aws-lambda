@@ -15,6 +15,7 @@ For further reference, please consider the following sections:
 ### Guides
 
 The following guides illustrate how to use some features concretely:
+https://www.graalvmonlambda.com/building/runtime-interface-client/
 
 * [Using WebSocket to build an interactive web application](https://spring.io/guides/gs/messaging-stomp-websocket/)
 * [Building a RESTFUL Web Service](https://spring.io/guides/gs/rest-service/)

@@ -1,4 +1,4 @@
-package com.sse;
+package com.sse.message;
 
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;

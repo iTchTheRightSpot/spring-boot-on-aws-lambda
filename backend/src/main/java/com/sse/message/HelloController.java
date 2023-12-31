@@ -1,6 +1,5 @@
-package com.sse;
+package com.sse.message;
 
-import jakarta.validation.constraints.NotNull;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -24,7 +23,7 @@ public class HelloController {
 
     @ResponseStatus(OK)
     @GetMapping(path = "/{index}", produces = "application/json")
-    public HelloMessage message(@NotNull @PathVariable Integer index) {
+    public HelloMessage message(@PathVariable Integer index) {
         return this.list.get(index);
     }
 

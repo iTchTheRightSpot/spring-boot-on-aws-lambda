@@ -17,9 +17,9 @@ import java.io.OutputStream;
  * As per docs
  * <a href="https://github.com/awslabs/aws-serverless-java-container/wiki/Quick-start---Spring-Boot3">...</a>
  * */
-public class StreamLambdaHandler implements RequestStreamHandler  {
+public class StreamHandler implements RequestStreamHandler  {
 
-    private static final Logger log = LoggerFactory.getLogger(StreamLambdaHandler.class);
+    private static final Logger log = LoggerFactory.getLogger(StreamHandler.class);
     private final static SpringBootLambdaContainerHandler<AwsProxyRequest, AwsProxyResponse> handler;
 
     static {
@@ -34,11 +34,8 @@ public class StreamLambdaHandler implements RequestStreamHandler  {
     }
 
     @Override
-    public void handleRequest(
-            InputStream inputStream,
-            OutputStream outputStream,
-            Context context
-    ) throws IOException {
-        handler.proxyStream(inputStream, outputStream, context);
+    public void handleRequest(InputStream i, OutputStream o, Context c) throws IOException {
+        handler.proxyStream(i, o, c);
     }
+
 }
