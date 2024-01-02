@@ -108,8 +108,8 @@
                         <groupId>org.graalvm.buildtools</groupId>
                         <artifactId>native-maven-plugin</artifactId>
                         <configuration>
-                            <mainClass>com.amazonaws.services.lambda.runtime.api.client.AWSLambda</mainClass>
-<!--                            <mainClass>com.sse.Application</mainClass>-->
+                            <!-- <mainClass>com.amazonaws.services.lambda.runtime.api.client.AWSLambda</mainClass> -->
+                            <mainClass>com.sse.Application</mainClass>
                             <buildArgs>
                                 <arg>--enable-url-protocols=http</arg>
                                 <arg>-H:+AddAllCharsets</arg>
