@@ -1,6 +1,7 @@
 # graalvm image as per docs https://github.com/graalvm/graalvm-demos/blob/master/spring-native-image/Dockerfiles/Dockerfile
 # using Oracle GraalVM for JDK 17
-FROM container-registry.oracle.com/graalvm/native-image:21-ol8 AS builder
+# FROM container-registry.oracle.com/graalvm/native-image:21-ol8 AS builder
+FROM ghcr.io/graalvm/graalvm-ce:ol9-java17-22 AS builder
 
 # set the working directory to /home/app
 WORKDIR /build
