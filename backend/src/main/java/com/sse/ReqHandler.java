@@ -5,6 +5,7 @@ import com.amazonaws.serverless.proxy.model.AwsProxyRequest;
 import com.amazonaws.serverless.proxy.model.AwsProxyResponse;
 import com.amazonaws.serverless.proxy.spring.SpringBootLambdaContainerHandler;
 import com.amazonaws.services.lambda.runtime.Context;
+import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.RequestStreamHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,9 +18,9 @@ import java.io.OutputStream;
  * As per docs
  * <a href="https://github.com/awslabs/aws-serverless-java-container/wiki/Quick-start---Spring-Boot3">...</a>
  * */
-public class RequestHandler implements RequestStreamHandler  {
+public class ReqHandler implements RequestStreamHandler  {
 
-    private static final Logger log = LoggerFactory.getLogger(RequestHandler.class);
+    private static final Logger log = LoggerFactory.getLogger(ReqHandler.class);
     private final static SpringBootLambdaContainerHandler<AwsProxyRequest, AwsProxyResponse> handler;
 
     static {
@@ -36,8 +37,11 @@ public class RequestHandler implements RequestStreamHandler  {
     }
 
     @Override
-    public void handleRequest(InputStream i, OutputStream o, Context c) throws IOException {
-        handler.proxyStream(i, o, c);
+    public void handleRequest(InputStream input, OutputStream output, Context context) throws IOException {
+        LambdaLogger logger = context.getLogger();
+        logger.log("Handle request method before");
+        handler.proxyStream(input, output, context);
+        logger.log("Handle request method after");
     }
 
 }

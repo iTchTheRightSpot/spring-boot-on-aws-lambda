@@ -1,5 +1,4 @@
 #!/bin/sh
-#set -euo pipefail
 cd ${LAMBDA_TASK_ROOT:-.}
-
+#set -euo pipefail
 ./server
