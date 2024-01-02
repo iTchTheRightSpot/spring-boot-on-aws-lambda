@@ -9,14 +9,14 @@ services:
     environment:
       SERVER_PORT: 1997
       SPRING_PROFILES_ACTIVE: default
-      API_BASE_URL: 'api/v1'
+      API_BASE_URL: 'api/v1/greeting'
       CORS_URL: http://localhost:4200/
 
-  ui:
-    container_name: ui
-    image: "emmanuelu17/websocket-ui:latest"
-    ports:
-      - "4200:4200"
-    environment:
-      PORT: 4200
-      SERVER_DOMAIN: http://localhost:1997/api/v1
+        #  ui:
+        #container_name: ui
+      # image: "emmanuelu17/websocket-ui:latest"
+      #ports:
+      #- "4200:4200"
+      #environment:
+      #PORT: 4200
+      #SERVER_DOMAIN: http://localhost:1997/api/v1
