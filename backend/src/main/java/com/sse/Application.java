@@ -1,6 +1,7 @@
 package com.sse;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sse.handler.IRequestHandler;
 import com.sse.message.GraalRuntimeHints;
 import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
 import org.springframework.boot.SpringApplication;
@@ -10,7 +11,7 @@ import org.springframework.context.annotation.ImportRuntimeHints;
 
 @SpringBootApplication
 @ImportRuntimeHints(value = GraalRuntimeHints.class)
-@RegisterReflectionForBinding(value = ReqHandler.class)
+@RegisterReflectionForBinding(value = IRequestHandler.class)
 public class Application {
 
     public static void main(String[] args) {
