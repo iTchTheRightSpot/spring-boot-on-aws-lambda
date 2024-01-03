@@ -1,22 +1,45 @@
-# graalvm image as per docs https://github.com/graalvm/graalvm-demos/blob/master/spring-native-image/Dockerfiles/Dockerfile
-# using GraalVM-ce for JDK 17
-# FROM container-registry.oracle.com/graalvm/native-image:21-ol8 AS builder
-FROM ghcr.io/graalvm/graalvm-ce:ol9-java17-22 AS builder
+FROM public.ecr.aws/amazonlinux/amazonlinux:2023
 
-# set the working directory to /home/app
-WORKDIR /build
+#Install depencencies
+RUN yum -y update \
+    && yum install -y unzip zip tar gzip bzip2-devel ed gcc gcc-c++ gcc-gfortran \
+    less libcurl-devel openssl openssl-devel readline-devel xz-devel \
+    zlib-devel glibc-static zlib-static \
+    && rm -rf /var/cache/yum
 
-# copy the source code into the image for building
-COPY . /build
+# Graal VM
+ENV JAVA_VERSION 17.0.9
+ENV GRAAL_FOLDERNAME graalvm-community-openjdk-${JAVA_VERSION}+9.1
+ENV GRAAL_FILENAME graalvm-community-jdk-${JAVA_VERSION}_linux-x64_bin.tar.gz
+RUN curl -4 -L https://github.com/graalvm/graalvm-ce-builds/releases/download/jdk-${JAVA_VERSION}/${GRAAL_FILENAME} | tar -xvz
+RUN mv $GRAAL_FOLDERNAME /usr/lib/graalvm
 
-# build
-RUN ./mvnw --no-transfer-progress native:compile -Pnative -DskipTests
+# Maven
+ENV MVN_VERSION 3.9.5
+ENV MVN_FOLDERNAME apache-maven-${MVN_VERSION}
+ENV MVN_FILENAME apache-maven-${MVN_VERSION}-bin.tar.gz
+RUN curl -4 -L https://archive.apache.org/dist/maven/maven-3/${MVN_VERSION}/binaries/${MVN_FILENAME} | tar -xvz
+RUN mv $MVN_FOLDERNAME /usr/lib/maven
 
-# as per aws example https://aws.amazon.com/blogs/compute/introducing-the-amazon-linux-2023-runtime-for-aws-lambda/
-FROM public.ecr.aws/lambda/provided:al2023
+# Native Image dependencies
+RUN /usr/lib/graalvm/bin/gu install native-image
+RUN ln -s /usr/lib/graalvm/bin/native-image /usr/bin/native-image
+RUN ln -s /usr/lib/maven/bin/mvn /usr/bin/mvn
 
-# copy byte code into server directory
-COPY --from=builder /build/target/server ./server
+ENV JAVA_HOME /usr/lib/graalvm
 
-# lambda runs byte code by just running directory
-ENTRYPOINT ["./server"]
+# Copy pom.xml to image & cache Maven dependencies
+WORKDIR project
+COPY pom.xml pom.xml
+RUN mvn verify clean --fail-never -B
+
+# Copy project and build native image
+COPY src src
+RUN mvn -Pnative -DskipTests package
+
+# Copy bootstrap file (needed for AWS Lambda custom runtime) to image, set file permissions and bundle as zip
+WORKDIR target
+COPY bootstrap bootstrap
+RUN chmod +x server
+RUN chmod +x bootstrap
+RUN zip lambda server bootstrap
