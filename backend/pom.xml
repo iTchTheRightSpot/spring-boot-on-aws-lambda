@@ -66,23 +66,35 @@
         </dependency>
     </dependencies>
 
+<!-- Failed to execute goal org.springframework.boot:spring-boot-maven-plugin:3.1.4:repackage (repackage) on project -->
+<!-- server: Execution repackage of goal org.springframework.boot:spring-boot-maven-plugin:3.1.4:repackage failed: -->
+<!-- Unable to find main class -> [Help 1] -->
+<!-- https://docs.spring.io/spring-boot/docs/current/maven-plugin/reference/htmlsingle/ -->
     <build>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-
                 <configuration>
+                    <mainClass>com.sse.Application</mainClass>
                     <excludes>
                         <exclude>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
                         </exclude>
                     </excludes>
+
                     <image>
                         <name>docker.io/emmanuelu17/${project.artifactId}:latest</name>
                     </image>
                 </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

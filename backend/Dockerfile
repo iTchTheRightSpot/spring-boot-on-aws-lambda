@@ -38,8 +38,16 @@ COPY src src
 RUN mvn -Pnative -DskipTests package
 
 # Copy bootstrap file (needed for AWS Lambda custom runtime) to image, set file permissions and bundle as zip
+
+# Set working directory to /target as /target/server bytecode will be generated from the command above
 WORKDIR target
+
+# Copy bootstrap file to /target
 COPY bootstrap bootstrap
+
+# Set executable permissions on server and bootstrap
 RUN chmod +x server
 RUN chmod +x bootstrap
+
+# Create a zip file named lambda containing server and bootstrap
 RUN zip lambda server bootstrap
