@@ -96,6 +96,39 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <!--                        <version>3.5.1</version>-->
+                <configuration>
+                    <filters>
+                        <filter>
+                            <artifact>*:*</artifact>
+                            <excludes>
+                                <exclude>module-info.class</exclude>
+                            </excludes>
+                        </filter>
+                    </filters>
+                    <createDependencyReducedPom>false</createDependencyReducedPom>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <artifactSet>
+                                <excludes>
+                                    <exclude>org.apache.tomcat.embed:*</exclude>
+                                </excludes>
+                            </artifactSet>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
     </build>
 
@@ -120,8 +153,6 @@
                         <groupId>org.graalvm.buildtools</groupId>
                         <artifactId>native-maven-plugin</artifactId>
                         <configuration>
-<!--                             <mainClass>com.amazonaws.services.lambda.runtime.api.client.AWSLambda</mainClass>-->
-<!--                            <mainClass>com.sse.Application</mainClass>-->
                             <buildArgs>
                                 <arg>--enable-url-protocols=http</arg>
                                 <arg>-H:+AddAllCharsets</arg>
@@ -137,28 +168,6 @@
                             </execution>
                         </executions>
                     </plugin>
-
-                    <!-- maven zip -->
-<!--                    <plugin>-->
-<!--                        <groupId>org.apache.maven.plugins</groupId>-->
-<!--                        <artifactId>maven-assembly-plugin</artifactId>-->
-<!--                        <executions>-->
-<!--                            <execution>-->
-<!--                                <id>native</id>-->
-<!--                                <phase>package</phase>-->
-<!--                                <goals>-->
-<!--                                    <goal>single</goal>-->
-<!--                                </goals>-->
-<!--                                <inherited>false</inherited>-->
-<!--                            </execution>-->
-<!--                        </executions>-->
-<!--                        <configuration>-->
-<!--                            <finalName>lambda</finalName>-->
-<!--                            <descriptors>-->
-<!--                                <descriptor>src/assembly/native.xml</descriptor>-->
-<!--                            </descriptors>-->
-<!--                        </configuration>-->
-<!--                    </plugin>-->
                 </plugins>
             </build>
         </profile>

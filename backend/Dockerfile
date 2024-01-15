@@ -7,9 +7,11 @@ RUN yum -y update \
     zlib-devel glibc-static zlib-static \
     && rm -rf /var/cache/yum
 
-# Graal VM
+# Graal VM (17 and 21)
 ENV JAVA_VERSION 17.0.9
 ENV GRAAL_FOLDERNAME graalvm-community-openjdk-${JAVA_VERSION}+9.1
+# ENV JAVA_VERSION 21.0.1
+# ENV GRAAL_FOLDERNAME graalvm-community-openjdl-${JAVA_VERSION}+12
 ENV GRAAL_FILENAME graalvm-community-jdk-${JAVA_VERSION}_linux-x64_bin.tar.gz
 RUN curl -4 -L https://github.com/graalvm/graalvm-ce-builds/releases/download/jdk-${JAVA_VERSION}/${GRAAL_FILENAME} | tar -xvz
 RUN mv $GRAAL_FOLDERNAME /usr/lib/graalvm
