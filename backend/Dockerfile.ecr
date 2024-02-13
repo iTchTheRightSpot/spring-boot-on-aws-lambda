@@ -1,0 +1,20 @@
+# Using latest GraalVM for java 21 https://github.com/graalvm/container/pkgs/container/graalvm-community
+FROM ghcr.io/graalvm/graalvm-community:21 AS builder
+
+# Set the working directory to /build
+WORKDIR /build
+
+# Copy the source code into the image for building
+COPY . /build
+
+# Build
+RUN ./mvnw --no-transfer-progress clean -Pnative package -DskipTests
+
+# Stage 2: Runtime stage
+FROM public.ecr.aws/amazonlinux/amazonlinux:2023
+
+# Copy bytecode into final directory
+COPY --from=builder /build/target/server app
+
+# Entrypoint to the application
+ENTRYPOINT ["/app"]

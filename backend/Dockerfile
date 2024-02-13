@@ -22,20 +22,14 @@ RUN curl -4 -L https://archive.apache.org/dist/maven/maven-3/${MVN_VERSION}/bina
 RUN mv $MVN_FOLDERNAME /usr/lib/maven
 RUN ln -s /usr/lib/maven/bin/mvn /usr/bin/mvn
 
-WORKDIR /project
-COPY . /project
-
-# Cache Maven dependencies
+# Copy pom.xml to image & cache Maven dependencies
+WORKDIR project
+COPY pom.xml pom.xml
 RUN mvn verify clean --fail-never -B
 
-# Build native image
-RUN mvn clean -Pnative package -DskipTests
+# Copy project and build native image
+COPY src src
+RUN mvn -Pnative -DskipTests package
 
-# Final directory
-WORKDIR /app
-
-# Copy bytecode into final directory
-COPY --from=builder /project/target/server ./app
-
-# Entrypoint to our app
-ENTRYPOINT ["./app/server"]
+# Create working directory
+WORKDIR target
