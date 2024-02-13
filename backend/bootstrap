@@ -2,4 +2,4 @@
 
 cd ${LAMBDA_TASK_ROOT:-.}
 
-./bytecode/server -Dlogging.level.org.springframework=DEBUG -Dlogging.level.com.amazonaws.serverless.proxy.spring=DEBUG
+./server -Dlogging.level.org.springframework=DEBUG -Dlogging.level.com.amazonaws.serverless.proxy.spring=DEBUG
