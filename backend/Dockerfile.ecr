@@ -17,11 +17,12 @@ FROM public.ecr.aws/amazonlinux/amazonlinux:2023
 WORKDIR /app
 
 # Copy bootstrap and bytecode into app directory
-COPY --from=builder /build/src/shell/native/bootstrap /app
-COPY --from=builder /build/target/server /app
+COPY --from=builder /build/src/shell/native/bootstrap /app/bootstrap
+COPY --from=builder /build/target/server /app/server
 
 # Set permissions files
-RUN chmod +x /app
+RUN chmod +x /app/bootstrap
+RUN chmod +x /app/server
 
 # Entrypoint to the application
-ENTRYPOINT ["/app"]
+ENTRYPOINT ["/app/bootstrap"]
