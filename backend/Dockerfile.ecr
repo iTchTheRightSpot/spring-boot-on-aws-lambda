@@ -13,8 +13,9 @@ RUN ./mvnw --no-transfer-progress clean -Pnative package -DskipTests
 # Stage 2: Runtime stage
 FROM public.ecr.aws/amazonlinux/amazonlinux:2023
 
-# Copy bytecode into final directory
+# Copy bootstrap and bytecode into app directory
+COPY --from=builder /build/shell/native/bootstrap app
 COPY --from=builder /build/target/server app
 
 # Entrypoint to the application
-ENTRYPOINT ["/app"]
+ENTRYPOINT ["/app/bootstrap"]
