@@ -95,8 +95,8 @@ jobs:
           username: emmanuelu17
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build docker image
-        run: docker build -t server-graalvm21:native-web . --progress=plain
+      - name: Build docker image for ECR
+        run: docker build -t server-graalvm21:native-web -f Dockerfile.ecr . --progress=plain
 
       # https://github.com/aws-actions/amazon-ecr-login
       - name: Tag, and push docker image to Amazon ECR
