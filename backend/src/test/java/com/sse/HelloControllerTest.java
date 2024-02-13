@@ -27,11 +27,10 @@ class HelloControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @Autowired
-    private ObjectMapper mapper;
-
     @Test
     void persist() throws Exception {
+        final ObjectMapper mapper = new ObjectMapper();
+
         // create 1
         this.mockMvc
                 .perform(post(this.url)
