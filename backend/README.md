@@ -1,26 +1,27 @@
-# About
-Project explains the 2 ways of deploying to AWS Lambda via
-zip file and a docker image. As far as uploading to lambda
-function, because this project is to grasp deploying to lambda,
-for a zipped file deployment, I packaged my application on my local
-system but for deploying a docker image, I have a git actions
-workflow to deploy ECR where I manually upload to lambda function.
+# Deploying Spring Boot Application as Native Executable on AWS Lambda.
 
-As far as this project it is a simple RESTFUL Spring Boot application
-complied to a native executable using GraalVM.
+## Overview
+This project demonstrates deploying RESTful Spring Boot 3.2.2 application on
+AWS Lambda using two methods: deploying as a zip file and deploying as a docker
+image. It is based on the AWS sample
+[repository](https://github.com/aws/serverless-java-container/tree/main/samples/springboot3/pet-store-native).
+
+For both types of deployment I manually uploaded. The zip file deployment,
+the application is packaged locally. For Docker image deployment, a
+GitHub Actions workflow is used to deploy to Amazon ECR (Elastic Container Registry).
+
+The application is compiled to a native executable using GraalVM.
 
 ## Dependencies
-1. Java 21
-2. Spring Cloud Function
-3. Spring Start Web
-4. Spring Starter Test to validate http logic
-5. Lombok
+1. Java 21 (runtime)
+2. Lombok
 
-## Docker image
-To build for a docker image, in your terminal `./build-native-ecr.sh`
-this will produce a docker image.
-![img.png](/img.png)
+## Docker Image Deployment
+To build the Docker image, execute `./build-native-ecr.sh` in your terminal.
+This script generates the docker image `server-graalvm21` tagged as `native-web`.
+You can view details about the image by running docker image ls in your CLI.
 
-## Zip
-To build a zip file for deployment, in your terminal run `./build-native-s3.sh`.
-This will produce a zip `server-0.0.1-SNAPSHOT-native-zip.zip`.
+## Zip File Deployment
+To build a zip file for deployment, run `./build-native-zip.sh` in your terminal.
+This script produces a zip file named `server-0.0.1-SNAPSHOT-native-zip.zip` in
+the root of project.

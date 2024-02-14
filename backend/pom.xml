@@ -29,20 +29,20 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-<!--            <dependency>-->
-<!--                <groupId>org.springframework.cloud</groupId>-->
-<!--                <artifactId>spring-cloud-dependencies</artifactId>-->
-<!--                <version>${spring-cloud.version}</version>-->
-<!--                <type>pom</type>-->
-<!--                <scope>import</scope>-->
-<!--            </dependency>-->
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
+            <artifactId>spring-boot-starter</artifactId>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -74,7 +74,6 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
 
     <!-- Failed to execute goal org.springframework.boot:spring-boot-maven-plugin:3.1.4:repackage (repackage) on project -->
@@ -86,6 +85,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+
                 <configuration>
                     <mainClass>com.sse.Application</mainClass>
                     <excludes>
@@ -94,11 +94,11 @@
                             <artifactId>lombok</artifactId>
                         </exclude>
                     </excludes>
-
                     <image>
                         <name>docker.io/emmanuelu17/${project.artifactId}:latest</name>
                     </image>
                 </configuration>
+
                 <executions>
                     <execution>
                         <goals>
@@ -138,78 +138,12 @@
                     </execution>
                 </executions>
             </plugin>
-
         </plugins>
     </build>
 
     <profiles>
-        <!-- native profile for s3 -->
-<!--        <profile>-->
-<!--            <id>native</id>-->
-<!--            <activation>-->
-<!--                <property>-->
-<!--                    <name>native</name>-->
-<!--                </property>-->
-<!--                <activeByDefault>true</activeByDefault>-->
-<!--            </activation>-->
-
-<!--            <properties>-->
-<!--                <spring.profiles.active>default</spring.profiles.active>-->
-<!--            </properties>-->
-
-<!--            <build>-->
-<!--                <plugins>-->
-<!--                    <plugin>-->
-<!--                        <groupId>org.graalvm.buildtools</groupId>-->
-<!--                        <artifactId>native-maven-plugin</artifactId>-->
-<!--                        <configuration>-->
-<!--                            <buildArgs>-->
-<!--                                <buildArg>&#45;&#45;enable-url-protocols=http &#45;&#45;enable-preview -march=compatibility</buildArg>-->
-<!--                            </buildArgs>-->
-<!--                        </configuration>-->
-<!--                        <executions>-->
-<!--                            <execution>-->
-<!--                                <goals>-->
-<!--                                    <goal>build</goal>-->
-<!--                                </goals>-->
-<!--                                <phase>package</phase>-->
-<!--                            </execution>-->
-<!--                            <execution>-->
-<!--                                <id>test</id>-->
-<!--                                <goals>-->
-<!--                                    <goal>test</goal>-->
-<!--                                </goals>-->
-<!--                                <phase>test</phase>-->
-<!--                            </execution>-->
-<!--                        </executions>-->
-<!--                    </plugin>-->
-
-<!--                    <plugin>-->
-<!--                        <artifactId>maven-assembly-plugin</artifactId>-->
-<!--                        <executions>-->
-<!--                            <execution>-->
-<!--                                <id>native-zip</id>-->
-<!--                                <phase>package</phase>-->
-<!--                                <goals>-->
-<!--                                    <goal>single</goal>-->
-<!--                                </goals>-->
-<!--                                <inherited>false</inherited>-->
-<!--                            </execution>-->
-<!--                        </executions>-->
-<!--                        <configuration>-->
-<!--                            <descriptors>-->
-<!--                                <descriptor>src/assembly/native.xml</descriptor>-->
-<!--                            </descriptors>-->
-<!--                        </configuration>-->
-<!--                    </plugin>-->
-<!--                </plugins>-->
-<!--            </build>-->
-<!--        </profile>-->
-
-        <!-- native profile for ecr -->
         <profile>
             <id>native</id>
-
             <build>
                 <plugins>
                     <plugin>
@@ -217,24 +151,48 @@
                         <artifactId>native-maven-plugin</artifactId>
                         <configuration>
                             <buildArgs>
-                                <buildArg>--enable-url-protocols=http --enable-preview -march=compatibility</buildArg>
+                                <buildArg>--enable-url-protocols=http</buildArg>
+                                <buildArg>--enable-preview</buildArg>
+                                <buildArg>-march=compatibility</buildArg>
                             </buildArgs>
                         </configuration>
                         <executions>
                             <execution>
+                                <id>build-native</id>
                                 <goals>
-                                    <goal>build</goal>
+                                    <!-- compile-no-fork over build goal as per -->
+                                    <!-- https://graalvm.github.io/native-build-tools/latest/ -->
+                                    <goal>compile-no-fork</goal>
                                 </goals>
                                 <phase>package</phase>
                             </execution>
                             <execution>
-                                <id>test</id>
+                                <id>test-native</id>
                                 <goals>
                                     <goal>test</goal>
                                 </goals>
                                 <phase>test</phase>
                             </execution>
                         </executions>
+                    </plugin>
+
+                    <plugin>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>native-zip</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                                <inherited>false</inherited>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>src/assembly/native.xml</descriptor>
+                            </descriptors>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>

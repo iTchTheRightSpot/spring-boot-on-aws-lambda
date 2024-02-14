@@ -1,4 +1,5 @@
 # Using latest GraalVM for java 21 as per https://github.com/graalvm/container/pkgs/container/graalvm-community
+# https://www.graalvm.org/latest/docs/getting-started/container-images/
 FROM ghcr.io/graalvm/graalvm-community:21 AS builder
 
 # Set the working directory to /build
@@ -7,8 +8,8 @@ WORKDIR /build
 # Copy the app source code into build directory
 COPY . /build
 
-# Compile to native image in ECR profile
-RUN ./mvnw --no-transfer-progress clean -Pnative package -DskipTests
+# Compile to native image
+RUN ./mvnw clean --no-transfer-progress -Pnative native:compile -DskipTests
 
 # Stage 2: Runtime stage
 FROM public.ecr.aws/amazonlinux/amazonlinux:2023
@@ -26,11 +27,11 @@ COPY --from=builder /build/target/server ${LAMBDA_TASK_ROOT}/
 # Set permission
 RUN chmod +x ${LAMBDA_TASK_ROOT}/
 
-# Copy bootstrap in root of project into dynamic lambda path
-COPY --from=builder /build/bootstrap ${LAMBDA_TASK_ROOT}/
+# Copy bootstrap into dynamic lambda path
+COPY --from=builder /build/src/shell/native/bootstrap ${LAMBDA_TASK_ROOT}/
 
 # Set permission
 RUN chmod +x ${LAMBDA_TASK_ROOT}/
 
-# Set command to run byte code.
+# Set command to run bytecode
 CMD ["./server"]
