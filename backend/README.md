@@ -1,22 +1,27 @@
-# About
-Understanding of websocket communication protocol over client side application (Angular).
+# Deploying Spring Boot Application as Native Executable on AWS Lambda.
 
-### Reference Documentation
+## Overview
+This project demonstrates deploying RESTful Spring Boot 3.2.2 application on
+AWS Lambda using two methods: deploying as a zip file and deploying as a docker
+image. It is based on the AWS sample
+[repository](https://github.com/aws/serverless-java-container/tree/main/samples/springboot3/pet-store-native).
 
-For further reference, please consider the following sections:
+For both types of deployment I manually uploaded. The zip file deployment,
+the application is packaged locally. For Docker image deployment, a
+GitHub Actions workflow is used to deploy to Amazon ECR (Elastic Container Registry).
 
-* [Official Apache Maven documentation](https://maven.apache.org/guides/index.html)
-* [Spring Boot Maven Plugin Reference Guide](https://docs.spring.io/spring-boot/docs/3.1.4/maven-plugin/reference/html/)
-* [Create an OCI image](https://docs.spring.io/spring-boot/docs/3.1.4/maven-plugin/reference/html/#build-image)
-* [Spring Boot DevTools](https://docs.spring.io/spring-boot/docs/3.1.4/reference/htmlsingle/index.html#using.devtools)
-* [WebSocket](https://docs.spring.io/spring-boot/docs/3.1.4/reference/htmlsingle/index.html#messaging.websockets)
-* [Spring Web](https://docs.spring.io/spring-boot/docs/3.1.4/reference/htmlsingle/index.html#web)
+The application is compiled to a native executable using GraalVM.
 
-### Guides
+## Dependencies
+1. Java 21 (runtime)
+2. Lombok
 
-The following guides illustrate how to use some features concretely:
+## Docker Image Deployment
+To build the Docker image, execute `./build-native-ecr.sh` in your terminal.
+This script generates the docker image `server-graalvm21` tagged as `native-web`.
+You can view details about the image by running docker image ls in your CLI.
 
-* [Using WebSocket to build an interactive web application](https://spring.io/guides/gs/messaging-stomp-websocket/)
-* [Building a RESTFUL Web Service](https://spring.io/guides/gs/rest-service/)
-* [Serving Web Content with Spring MVC](https://spring.io/guides/gs/serving-web-content/)
-* [Building REST services with Spring](https://spring.io/guides/tutorials/rest/)
+## Zip File Deployment
+To build a zip file for deployment, run `./build-native-zip.sh` in your terminal.
+This script produces a zip file named `server-0.0.1-SNAPSHOT-native-zip.zip` in
+the root of project.

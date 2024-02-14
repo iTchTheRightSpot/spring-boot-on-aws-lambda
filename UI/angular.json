@@ -11,8 +11,12 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-builders/custom-webpack:browser",
           "options": {
+            "customWebpackConfig": {
+              "path": "src/custom-webpack.config.ts",
+              "mergeRules": { "externals": "replace" }
+            },
             "outputPath": "dist/websocket-ui",
             "index": "src/index.html",
             "main": "src/main.ts",
@@ -31,6 +35,12 @@
           },
           "configurations": {
             "production": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.production.ts"
+                }
+              ],
               "budgets": [
                 {
                   "type": "initial",
@@ -57,13 +67,13 @@
           "defaultConfiguration": "production"
         },
         "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
+          "builder": "@angular-builders/custom-webpack:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "websocketUI:build:production"
+              "buildTarget": "websocketUI:build:production"
             },
             "development": {
-              "browserTarget": "websocketUI:build:development"
+              "buildTarget": "websocketUI:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -71,7 +81,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "websocketUI:build"
+            "buildTarget": "websocketUI:build"
           }
         },
         "test": {
