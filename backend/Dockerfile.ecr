@@ -1,13 +1,13 @@
-# Using latest GraalVM for java 21 https://github.com/graalvm/container/pkgs/container/graalvm-community
+# Using latest GraalVM for java 21 as per https://github.com/graalvm/container/pkgs/container/graalvm-community
 FROM ghcr.io/graalvm/graalvm-community:21 AS builder
 
 # Set the working directory to /build
 WORKDIR /build
 
-# Copy the source code into the image for building
+# Copy the app source code into build directory
 COPY . /build
 
-# Build
+# Compile to native image in ECR profile
 RUN ./mvnw --no-transfer-progress clean -Pnative package -DskipTests
 
 # Stage 2: Runtime stage
@@ -23,14 +23,14 @@ RUN yum -y update \
 # Copy bytecode into the path to your Lambda function code as per https://repost.aws/knowledge-center/lambda-container-images
 COPY --from=builder /build/target/server ${LAMBDA_TASK_ROOT}/
 
-# Grant permission
+# Set permission
 RUN chmod +x ${LAMBDA_TASK_ROOT}/
 
-# Copy bootstrap and bytecode into app directory
+# Copy bootstrap in root of project into dynamic lambda path
 COPY --from=builder /build/bootstrap ${LAMBDA_TASK_ROOT}/
 
-# Set permissions files
+# Set permission
 RUN chmod +x ${LAMBDA_TASK_ROOT}/
 
-# Entrypoint to the application
+# Set command to run byte code.
 CMD ["./server"]

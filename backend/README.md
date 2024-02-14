@@ -1,23 +1,26 @@
 # About
-Understanding of websocket communication protocol over client side application (Angular).
+Project explains the 2 ways of deploying to AWS Lambda via
+zip file and a docker image. As far as uploading to lambda
+function, because this project is to grasp deploying to lambda,
+for a zipped file deployment, I packaged my application on my local
+system but for deploying a docker image, I have a git actions
+workflow to deploy ECR where I manually upload to lambda function.
 
-### Reference Documentation
+As far as this project it is a simple RESTFUL Spring Boot application
+complied to a native executable using GraalVM.
 
-For further reference, please consider the following sections:
+## Dependencies
+1. Java 21
+2. Spring Cloud Function
+3. Spring Start Web
+4. Spring Starter Test to validate http logic
+5. Lombok
 
-* [Official Apache Maven documentation](https://maven.apache.org/guides/index.html)
-* [Spring Boot Maven Plugin Reference Guide](https://docs.spring.io/spring-boot/docs/3.1.4/maven-plugin/reference/html/)
-* [Create an OCI image](https://docs.spring.io/spring-boot/docs/3.1.4/maven-plugin/reference/html/#build-image)
-* [Spring Boot DevTools](https://docs.spring.io/spring-boot/docs/3.1.4/reference/htmlsingle/index.html#using.devtools)
-* [WebSocket](https://docs.spring.io/spring-boot/docs/3.1.4/reference/htmlsingle/index.html#messaging.websockets)
-* [Spring Web](https://docs.spring.io/spring-boot/docs/3.1.4/reference/htmlsingle/index.html#web)
+## Docker image
+To build for a docker image, in your terminal `./build-native-ecr.sh`
+this will produce a docker image.
+![img.png](/img.png)
 
-### Guides
-
-The following guides illustrate how to use some features concretely:
-https://www.graalvmonlambda.com/building/runtime-interface-client/
-
-* [Using WebSocket to build an interactive web application](https://spring.io/guides/gs/messaging-stomp-websocket/)
-* [Building a RESTFUL Web Service](https://spring.io/guides/gs/rest-service/)
-* [Serving Web Content with Spring MVC](https://spring.io/guides/gs/serving-web-content/)
-* [Building REST services with Spring](https://spring.io/guides/tutorials/rest/)
+## Zip
+To build a zip file for deployment, in your terminal run `./build-native-s3.sh`.
+This will produce a zip `server-0.0.1-SNAPSHOT-native-zip.zip`.
